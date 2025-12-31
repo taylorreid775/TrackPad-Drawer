@@ -29,9 +29,22 @@
 		383A12752F057AC40012D87E /* TrackPad DrawerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TrackPad DrawerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		383A12892F057DB90012D87E /* Exceptions for "TrackPad Drawer" folder in "TrackPad Drawer" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DrawingView.swift,
+			);
+			target = 383A125A2F057AC10012D87E /* TrackPad Drawer */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		383A125D2F057AC10012D87E /* TrackPad Drawer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				383A12892F057DB90012D87E /* Exceptions for "TrackPad Drawer" folder in "TrackPad Drawer" target */,
+			);
 			path = "TrackPad Drawer";
 			sourceTree = "<group>";
 		};
