@@ -11,8 +11,12 @@ class ViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        print("ViewController loaded")
+    }
+    
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        view.window?.title = "TrackPad Drawer"
     }
 
     override var representedObject: Any? {
