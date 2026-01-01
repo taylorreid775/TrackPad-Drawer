@@ -1,3 +1,10 @@
+//
+//  ViewController.swift
+//  TrackPad Drawer
+//
+//  Created by Taylor Reid on 2025-12-31.
+//
+
 import Cocoa
 
 class DrawingView: NSView {
@@ -23,6 +30,7 @@ class DrawingView: NSView {
                 context.addLine(to: point)
             }
         }
+        
         // Stroke once after adding all prior stroke segments
         context.strokePath()
         
@@ -36,7 +44,6 @@ class DrawingView: NSView {
     }
     
     override func mouseDown(with event: NSEvent) {
-        print("mouseDown at " + NSStringFromCGPoint(event.locationInWindow))
         currentStroke.append(event.locationInWindow)
         needsDisplay = true
     }
@@ -52,10 +59,4 @@ class DrawingView: NSView {
         needsDisplay = true
         currentStroke.removeAll()
     }
-    
-    func NSStringFromCGPoint(_ point: CGPoint) -> String {
-        return "(\(point.x), \(point.y))"
-    }
-    
-
 }
