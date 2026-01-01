@@ -9,22 +9,13 @@ import Cocoa
 
 class ViewController: NSViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        print("ViewController loaded")
+    override func loadView() {
+        self.view = DrawingView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
     }
-    
+
     override func viewDidAppear() {
         super.viewDidAppear()
         view.window?.title = "TrackPad Drawer"
     }
-
-    override var representedObject: Any? {
-        didSet {
-        // Update the view, if already loaded.
-        }
-    }
-
-
 }
 
