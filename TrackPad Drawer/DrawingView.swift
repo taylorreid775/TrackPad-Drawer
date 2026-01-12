@@ -9,8 +9,16 @@ import Cocoa
 
 class DrawingView: NSView {
 
-    var currentStroke: [CGPoint] = []
-    var strokes: [[CGPoint]] = []
+    struct Touch {
+        let point: CGPoint
+        let pressure: CGFloat
+    }
+    
+    private var backingContext: CGContext?
+    private var backingImage: CGImage?
+    
+    var currentStroke: [Touch] = []
+    var strokes: [[Touch]] = []
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -19,44 +27,68 @@ class DrawingView: NSView {
             return
         }
 
-        context.setStrokeColor(NSColor.systemBlue.cgColor)
-        context.setLineWidth(4.0)
-
-        // Draw previously completed strokes
+        context.setStrokeColor(NSColor.systemRed.cgColor)
+        let minWidth: CGFloat = 1.0
+        let maxWidth: CGFloat = 6.0
+        
+        // Draw completed strokes with per-segment pressure width
         for stroke in strokes {
-            guard stroke.count > 1 else { continue } // need at least a segment
-            context.move(to: stroke[0])
-            for point in stroke.dropFirst() {
-                context.addLine(to: point)
+            drawStroke(stroke, context: context, minWidth: minWidth, maxWidth: maxWidth)
+        }
+        
+        if !currentStroke.isEmpty {
+            drawStroke(currentStroke, context: context, minWidth: minWidth, maxWidth: maxWidth)
+        }
+    }
+    
+    func drawStroke(_ stroke: [Touch], context: CGContext, minWidth: CGFloat, maxWidth: CGFloat) {
+        guard stroke.count > 1 else { return }
+        
+        //group
+        var i = 1
+        var currentWidth = widthFor(stroke[1].pressure, minWidth, maxWidth)
+        context.setLineWidth(currentWidth)
+        context.move(to: stroke[0].point)
+        
+        while i < stroke.count {
+            let w = widthFor(stroke[i].pressure, minWidth, maxWidth)
+            
+            if abs(w - currentWidth) < 0.25 {
+                context.addLine(to: stroke[i].point)
+                i += 1
+            } else {
+                context.strokePath()
+                currentWidth = w
+                context.setLineWidth(currentWidth)
+                context.move(to: stroke[i - 1].point)
+                context.addLine(to: stroke[i].point)
+                i += 1
             }
         }
-        
-        // Stroke once after adding all prior stroke segments
         context.strokePath()
-        
-        if currentStroke.count > 1 {
-              context.move(to: currentStroke[0])
-              for point in currentStroke.dropFirst() {
-                  context.addLine(to: point)
-              }
-              context.strokePath() // stroke once after adding all segments
-        }
     }
     
-    override func mouseDown(with event: NSEvent) {
-        currentStroke.append(event.locationInWindow)
-        needsDisplay = true
+    func widthFor(_ pressure: CGFloat, _ minWidth: CGFloat, _ maxWidth: CGFloat) -> CGFloat {
+        let p = max(0, min(1, pressure))
+        return minWidth + p * (maxWidth - minWidth)
     }
     
-    override func mouseDragged(with event: NSEvent) {
-        currentStroke.append(event.locationInWindow)
+    override func pressureChange(with event: NSEvent) {
+        let p = max(0,event.pressure)
+        let loc = convert(event.locationInWindow, from: nil)
+        currentStroke.append(Touch(point: loc, pressure: CGFloat(p)))
         needsDisplay = true
     }
     
     override func mouseUp(with event: NSEvent) {
-        currentStroke.append(event.locationInWindow)
         strokes.append(currentStroke)
         needsDisplay = true
         currentStroke.removeAll()
     }
+    
+    @objc func clear(_ sender: Any? = nil) {
+        strokes.removeAll()
+        needsDisplay = true
+    }
 }
+
